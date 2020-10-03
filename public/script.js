@@ -27,6 +27,19 @@ navigator.mediaDevices.getUserMedia({
     socket.on('user-connected', (userId) => {
         connectToNewUser(userId, stream);
     })
+    let msg = $('input')
+
+    $('html').keydown((e) => {
+        if (e.which == 13 && msg.val().length !== 0) {
+            socket.emit('message', msg.val());
+            msg.val('')
+        }
+    })
+
+    socket.on('createMessage', message => {
+        $('ul.messages').append(`<li class="message"><b>user</b><br/>${message}</li>`);
+        scrollToBottom();
+    })
 })
 peer.on('open', id => {
     socket.emit("join-room", ROOM_ID, id);
@@ -50,4 +63,9 @@ const addVideoStream = (video, stream) => {
     })
 
     videoGrid.append(video);
+}
+
+const scrollToBottom = () => {
+    let d = $('.main_chat_window');
+    d.scrollTop(d.prop("scrollHeight"));
 }
